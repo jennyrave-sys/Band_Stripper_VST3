@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>JENNYRAVE // BAND STRIPPER VST3</title>
+    <meta name="title" content="JENNYRAVE // BAND STRIPPER VST3">
+    <meta name="description" content="8-band independent gating system for precision noise removal, loop reconstruction, and vocal de-reverb. High-performance VST3 for Windows 10/11.">
+    <meta name="keywords" content="VST3, Band Stripper, Audio Plugin, Noise Removal, De-reverb, Drum Bleed, Gating, JennyRave, Music Production, Windows 10, Windows 11, Open Source Audio">
+    <meta name="author" content="JennyRave">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://github.com/jennyrave-sys/Band_Stripper_VST3">
+    <meta property="og:title" content="JENNYRAVE // BAND STRIPPER VST3">
+    <meta property="og:description" content="Precision 8-band gating for industrial audio recovery and creative sound design.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/jennyrave-sys/Band_Stripper_VST3/main/jennyrave-band_stripper.png">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://github.com/jennyrave-sys/Band_Stripper_VST3">
+    <meta property="twitter:title" content="JENNYRAVE // BAND STRIPPER VST3">
+    <meta property="twitter:description" content="8-band independent gating system for Windows 10/11. Strip away the noise floor.">
+    <meta property="twitter:image" content="https://raw.githubusercontent.com/jennyrave-sys/Band_Stripper_VST3/main/jennyrave-band_stripper.png">
+
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #111;
+            --accent: #00e5ff;
+            --accent-dim: #008ba3;
+            --text-main: #e0e0e0;
+            --text-dim: #666;
+            --danger: #ff3d00;
+            --warning: #ffab00;
+            --border: #222;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .glow {
+            position: fixed;
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, rgba(0, 229, 255, 0.05) 0%, transparent 70%);
+            top: -10vw;
+            right: -10vw;
+            z-index: -1;
+        }
+
+        header {
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-weight: 900;
+            letter-spacing: 5px;
+            font-size: 1.2rem;
+            color: var(--text-dim);
+        }
+
+        .logo span { color: var(--accent); }
+
+        .hero {
+            padding: 3rem 1rem;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 10vw, 5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1.5px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 2.5rem auto;
+        }
+
+        .hero p strong {
+            color: var(--accent);
+            font-weight: 800;
+        }
+
+        .product-image-wrap {
+            position: relative;
+            background: #000;
+            padding: 8px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            max-width: 1000px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .product-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 4px;
+        }
+
+        section {
+            padding: 4rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 2.5rem;
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        .use-cases {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .case-card {
+            background: var(--panel);
+            padding: 1.5rem;
+            border-left: 3px solid var(--accent);
+            border-radius: 4px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .case-card:hover {
+            transform: translateY(-3px);
+            border-color: #fff;
+        }
+
+        .case-card h3 {
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .case-card p {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        .install-box {
+            background: #000;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 229, 255, 0.05);
+            max-width: 1000px;
+            margin: 0 auto;
+            overflow-wrap: break-word;
+        }
+
+        .step {
+            display: flex;
+            gap: 10px;
+        }
+
+        .step-txt { color: #aaa; font-size: 0.85rem; line-height: 1.7; }
+        .path-highlight { 
+            color: var(--warning); 
+            background: rgba(255,171,0,0.1); 
+            padding: 4px 8px; 
+            border-radius: 3px; 
+            display: inline-block; 
+            margin-top: 8px; 
+            border: 1px solid rgba(255,171,0,0.2);
+            word-break: break-all;
+        }
+
+        .install-link {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        
+        .install-link:hover {
+            color: #fff;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--accent);
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            font-weight: 900;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.4);
+        }
+
+        footer {
+            padding: 3rem 1rem;
+            text-align: center;
+            color: #444;
+            font-size: 0.65rem;
+            border-top: 1px solid #111;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -2;
+        }
+
+        @media (max-width: 600px) {
+            header { padding: 1.5rem 1rem; }
+            .logo { font-size: 1rem; letter-spacing: 3px; }
+            .hero { padding-top: 2rem; }
+            .btn { width: 100%; max-width: 320px; }
+            section { padding: 3rem 1.2rem; }
+            .install-box { padding: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow"></div>
+    <div class="bg-grid"></div>
+
+    <header>
+        <div class="logo">JENNY<span>RAVE</span></div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>BAND STRIPPER</h1>
+            <p>8-band independent gating system. Strip away the noise floor and reveal the <strong>raw core</strong> of your frequency spectrum.</p>
+            
+            <div class="product-image-wrap">
+                <img src="https://raw.githubusercontent.com/jennyrave-sys/Band_Stripper_VST3/main/jennyrave-band_stripper.png" 
+                     alt="JennyRave Band Stripper Interface" 
+                     class="product-image"
+                     onerror="this.src='https://via.placeholder.com/1000x300/111/00e5ff?text=JENNYRAVE+BAND+STRIPPER+UI'">
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <a href="https://raw.githubusercontent.com/jennyrave-sys/Band_Stripper_VST3/main/JennyRave_Band_Stripper_vst3.zip" class="btn" target="_blank" rel="noopener noreferrer" download>Download VST3 (.zip)</a>
+            </div>
+        </section>
+
+        <section id="use-cases">
+            <h2>Purpose & Applications</h2>
+            <div class="use-cases">
+                <div class="case-card">
+                    <h3>Loop Reconstruction</h3>
+                    <p>Isolate the "knock" of a kick and the "snap" of a snare from a full loop. Use SUB and LOW bands for kick sustain and HI-M for the snare snap, while muting the "mud" in BODY and LO-M bands.</p>
+                </div>
+                <div class="case-card">
+                    <h3>Low-End Mastering Tightness</h3>
+                    <p>Place on a master bus to gate only the SUB band. Sync the threshold so the gate only opens during kick hits, silencing rumbley bass in the gaps to create massive headroom and a tighter club sound.</p>
+                </div>
+                <div class="case-card">
+                    <h3>Vocal De-Reverb</h3>
+                    <p>Target the Mid and Lo-Mid bands to strip away room reflections and muddy reverb tails. Tighten up "wet" vocal recordings while keeping the high-end air clear and natural.</p>
+                </div>
+                <div class="case-card">
+                    <h3>Precision Noise Removal</h3>
+                    <p>Silence hiss or rumble in specific frequency pockets without touching the core characteristics of your audio signal. Total spectral isolation for forensic cleanup.</p>
+                </div>
+                <div class="case-card">
+                    <h3>Drum Bleed Isolation</h3>
+                    <p>Perfect for multi-track drum kits. Strip cymbal wash from snare mics or kick-drum bleed from tom mics by gating only the specific frequency bands where the bleed resides.</p>
+                </div>
+                <div class="case-card">
+                    <h3>Creative Sound Design</h3>
+                    <p>Transform static loops into rhythmic patterns. Use unipolar visualization to sculpt completely new dynamic textures across the spectrum, turning pads into pulsing rhythms.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="install">
+            <h2>How to Install</h2>
+            <div class="install-box">
+                <div class="step">
+                    <span class="step-txt">Download <a href="https://raw.githubusercontent.com/jennyrave-sys/Band_Stripper_VST3/main/JennyRave_Band_Stripper_vst3.zip" class="install-link" target="_blank" rel="noopener noreferrer" download>JennyRave_Band_Stripper_vst3.zip</a> and unzip the contents directly into your system's VST3 folder, which is usually located at:<br>
+                    <span class="path-highlight">C:\Program Files\Common Files\VST3</span></span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>2026 JENNYRAVE. Distributed under the GPL-3.0 License.</p>
+    </footer>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const glow = document.querySelector('.glow');
+            if (glow) {
+                glow.style.transform = `translate(${scrolled * 0.1}px, ${scrolled * 0.05}px)`;
+            }
+        });
+    </script>
+</body>
+</html>
