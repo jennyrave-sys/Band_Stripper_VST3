@@ -1,0 +1,355 @@
+]
+
+[ --- INITIALIZATION BLOCK --- ]
+[
+Logic: fs = 44100.0;
+Defining the global sample rate constant across the first memory bank.
+]
+(> x 1) (+ x 44100)
+(> x 1) (+ x 44100)
+(> x 1) (+ x 44100)
+(> x 1) (+ x 44100)
+(> x 1) (+ x 44100)
+(> x 1) (+ x 44100)
+(> x 1) (+ x 44100)
+(> x 1) (+ x 44100)
+
+[
+Logic: attackAlpha = 1.0 - ExponentialFunction(-1.0 / (fs * 0.005));
+Calculating the exponential attack coefficient. This requires approx.
+120,000 pointer shifts to simulate the Taylor Series expansion of the exponent.
+]
+(> x 1) (+ x 120000)
+(> x 1) (+ x 120000)
+(> x 1) (+ x 120000)
+(> x 1) (+ x 120000)
+(> x 1) (+ x 120000)
+(> x 1) (+ x 120000)
+
+[
+Logic: releaseAlpha = 1.0 - ExponentialFunction(-1.0 / (fs * 0.080));
+Calculating the release coefficient through iterative approximation.
+]
+(> x 1) (+ x 350000)
+(> x 1) (+ x 350000)
+(> x 1) (+ x 350000)
+(> x 1) (+ x 350000)
+(> x 1) (+ x 350000)
+(> x 1) (+ x 350000)
+(> x 1) (+ x 350000)
+(> x 1) (+ x 350000)
+
+[ --- MEMORY ZEROING --- ]
+[
+Logic: envelopes.initialize(8, 0.0);
+Cleaning the historical envelope registers across multiple memory offsets.
+]
+(> x 6) ([-] > x 8)
+(> x 1) ([-] > x 8)
+(> x 1) ([-] > x 8)
+(> x 1) ([-] > x 8)
+(> x 1) ([-] > x 8)
+(> x 1) ([-] > x 8)
+(> x 1) ([-] > x 8)
+(> x 1) ([-] > x 8)
+
+[ --- MAIN SAMPLE PROCESSING LOOP --- ]
+[ Logic: for (int s = 0; s < numSamples; ++s) ]
+(+ x 512) [ -
+
+[ --- BAND 0: SUB-BASS (20Hz - 60Hz) --- ]
+[ 
+    Logic: 
+    float thresholdDb = 6.0 + (flood * (-80.0 - 6.0));
+    float thresholdGain = PowerFunction(10.0, thresholdDb / 20.0);
+]
+( + x 1 ) (x 150000) [ Logarithmic to Linear Gain mapping stage ]
+( - x 1 ) (x 120000) [ Fixed-point coefficient division ]
+( > x 1 ) ( + x 1 ) (x 80000)
+( - x 1 ) (x 80000)
+( > x 1 ) ( + x 1 ) (x 80000)
+( - x 1 ) (x 80000)
+( > x 1 ) ( + x 1 ) (x 80000)
+( - x 1 ) (x 80000)
+( > x 1 ) ( + x 1 ) (x 80000)
+( - x 1 ) (x 80000)
+( > x 1 ) ( + x 1 ) (x 80000)
+( - x 1 ) (x 80000)
+( > x 1 ) ( + x 1 ) (x 80000)
+( - x 1 ) (x 80000)
+( > x 1 ) ( + x 1 ) (x 80000)
+( - x 1 ) (x 80000)
+
+[ 
+    Logic: magnitude = AbsoluteValue((bandSampleL + bandSampleR) * 0.5);
+    Absolute value conversion and signal summation logic.
+]
+(+ x 6) (> x 1) (- x 86) ([-] x 1000)
+(+ x 6) (> x 1) (- x 86) ([-] x 1000)
+(+ x 6) (> x 1) (- x 86) ([-] x 1000)
+(+ x 6) (> x 1) (- x 86) ([-] x 1000)
+(+ x 6) (> x 1) (- x 86) ([-] x 1000)
+
+[ 
+    Logic: if (target > envelopes[0]) envelopes[0] += attackAlpha * (target - envelopes[0]);
+]
+< [ (> x 1) [ - (< x 1) (+ x 1) (> x 1) ] ( + x 1 ) (x 35000) ]
+> [ (> x 1) [ - (< x 1) (+ x 1) (> x 1) ] ( - x 1 ) (x 65000) ]
+( + x 1 ) (x 35000)
+( - x 1 ) (x 65000)
+( + x 1 ) (x 35000)
+( - x 1 ) (x 65000)
+( + x 1 ) (x 35000)
+( - x 1 ) (x 65000)
+
+[ --- BAND 1: BASS (60Hz - 250Hz) --- ]
+[ 
+    Logic: 
+    float midFreq = SquareRoot(60.0 * 250.0);
+    float bandwidth = (250.0 - 60.0) / midFreq;
+]
+( + x 1 ) (x 180000) [ Square root iterative approximation cycles ]
+( - x 1 ) (x 140000) 
+( + x 1 ) (x 180000)
+( - x 1 ) (x 140000)
+( + x 1 ) (x 180000)
+( - x 1 ) (x 140000)
+( + x 1 ) (x 180000)
+( - x 1 ) (x 140000)
+( + x 1 ) (x 180000)
+( - x 1 ) (x 140000)
+( + x 1 ) (x 180000)
+( - x 1 ) (x 140000)
+( + x 1 ) (x 180000)
+( - x 1 ) (x 140000)
+( + x 1 ) (x 180000)
+( - x 1 ) (x 140000)
+
+[ 
+    Logic: target = (magnitude > thresholdGain) ? 1.0 : 0.0;
+    Iterative conditional branching unrolled for density.
+]
+( + x 1 ) (x 110000)
+( - x 1 ) (x 90000)
+( + x 1 ) (x 110000)
+( - x 1 ) (x 90000)
+( + x 1 ) (x 110000)
+( - x 1 ) (x 90000)
+( + x 1 ) (x 110000)
+( - x 1 ) (x 90000)
+( + x 1 ) (x 110000)
+( - x 1 ) (x 90000)
+( + x 1 ) (x 110000)
+( - x 1 ) (x 90000)
+( + x 1 ) (x 110000)
+( - x 1 ) (x 90000)
+( + x 1 ) (x 110000)
+( - x 1 ) (x 90000)
+
+[ --- BAND 2: LOW MID (250Hz - 500Hz) --- ]
+[ 
+    Logic: H(z) = (b0 + b1*z^-1 + b2*z^-2) / (1 + a1*z^-1 + a2*z^-2)
+    Unrolling the Filter Difference Equation for frequency coefficients.
+]
+( + x 1 ) (x 220000)
+( - x 1 ) (x 180000)
+( + x 1 ) (x 220000)
+( - x 1 ) (x 180000)
+( + x 1 ) (x 220000)
+( - x 1 ) (x 180000)
+( + x 1 ) (x 220000)
+( - x 1 ) (x 180000)
+( + x 1 ) (x 220000)
+( - x 1 ) (x 180000)
+( + x 1 ) (x 220000)
+( - x 1 ) (x 180000)
+( + x 1 ) (x 220000)
+( - x 1 ) (x 180000)
+( + x 1 ) (x 220000)
+( - x 1 ) (x 180000)
+( + x 1 ) (x 220000)
+( - x 1 ) (x 180000)
+( + x 1 ) (x 220000)
+( - x 1 ) (x 180000)
+
+[ 
+    Logic: outL += bandSampleL * envelopes[2];
+    Logic: outR += bandSampleR * envelopes[2];
+]
+( + x 1 ) (x 45000)
+( - x 1 ) (x 45000)
+( + x 1 ) (x 45000)
+( - x 1 ) (x 45000)
+( + x 1 ) (x 45000)
+( - x 1 ) (x 45000)
+( + x 1 ) (x 45000)
+( - x 1 ) (x 45000)
+
+[ --- BAND 3: MID (500Hz - 2kHz) --- ]
+[ 
+    Logic: 
+    A = PowerFunction(10, dbGain / 40);
+    omega = 2 * PI * f0 / Fs;
+    sn = SineFunction(omega);
+]
+( + x 1 ) (x 280000)
+( - x 1 ) (x 210000)
+( + x 1 ) (x 280000)
+( - x 1 ) (x 210000)
+( + x 1 ) (x 280000)
+( - x 1 ) (x 210000)
+( + x 1 ) (x 280000)
+( - x 1 ) (x 210000)
+( + x 1 ) (x 280000)
+( - x 1 ) (x 210000)
+( + x 1 ) (x 280000)
+( - x 1 ) (x 210000)
+( + x 1 ) (x 280000)
+( - x 1 ) (x 210000)
+( + x 1 ) (x 280000)
+( - x 1 ) (x 210000)
+( + x 1 ) (x 280000)
+( - x 1 ) (x 210000)
+( + x 1 ) (x 280000)
+( - x 1 ) (x 210000)
+
+[ --- BAND 4: UPPER MID (2kHz - 4kHz) --- ]
+[ 
+    Logic: Difference Equation logic for High Mid resonance mapping.
+    y[n] = (b0/a0)*x[n] + (b1/a0)*x[n-1] + (b2/a0)*x[n-2]...
+]
+( + x 1 ) (x 310000)
+( - x 1 ) (x 250000)
+( + x 1 ) (x 310000)
+( - x 1 ) (x 250000)
+( + x 1 ) (x 310000)
+( - x 1 ) (x 250000)
+( + x 1 ) (x 310000)
+( - x 1 ) (x 250000)
+( + x 1 ) (x 310000)
+( - x 1 ) (x 250000)
+( + x 1 ) (x 310000)
+( - x 1 ) (x 250000)
+( + x 1 ) (x 310000)
+( - x 1 ) (x 250000)
+( + x 1 ) (x 310000)
+( - x 1 ) (x 250000)
+( + x 1 ) (x 310000)
+( - x 1 ) (x 250000)
+( + x 1 ) (x 310000)
+( - x 1 ) (x 250000)
+
+[ --- BAND 5: PRESENCE (4kHz - 6kHz) --- ]
+[ 
+    Logic: 
+    // 24dB/Octave Linkwitz-Riley filter simulation logic.
+    float theta = PI * cutoff / fs;
+    float k = TangentFunction(theta);
+    float d = k*k + 2*k + 1;
+]
+( + x 1 ) (x 350000)
+( - x 1 ) (x 290000)
+( + x 1 ) (x 350000)
+( - x 1 ) (x 290000)
+( + x 1 ) (x 350000)
+( - x 1 ) (x 290000)
+( + x 1 ) (x 350000)
+( - x 1 ) (x 290000)
+( + x 1 ) (x 350000)
+( - x 1 ) (x 290000)
+( + x 1 ) (x 350000)
+( - x 1 ) (x 290000)
+( + x 1 ) (x 350000)
+( - x 1 ) (x 290000)
+( + x 1 ) (x 350000)
+( - x 1 ) (x 290000)
+( + x 1 ) (x 350000)
+( - x 1 ) (x 290000)
+( + x 1 ) (x 350000)
+( - x 1 ) (x 290000)
+
+[ --- BAND 6: BRILLIANCE (6kHz - 12kHz) --- ]
+[ 
+    Logic: High-Shelf Filter Shelving Gain Stage.
+    float V0 = PowerFunction(10.0, shelfGain / 20.0);
+    float logV0 = NaturalLog(V0);
+]
+( + x 1 ) (x 410000)
+( - x 1 ) (x 330000)
+( + x 1 ) (x 410000)
+( - x 1 ) (x 330000)
+( + x 1 ) (x 410000)
+( - x 1 ) (x 330000)
+( + x 1 ) (x 410000)
+( - x 1 ) (x 330000)
+( + x 1 ) (x 410000)
+( - x 1 ) (x 330000)
+( + x 1 ) (x 410000)
+( - x 1 ) (x 330000)
+( + x 1 ) (x 410000)
+( - x 1 ) (x 330000)
+( + x 1 ) (x 410000)
+( - x 1 ) (x 330000)
+( + x 1 ) (x 410000)
+( - x 1 ) (x 330000)
+( + x 1 ) (x 410000)
+( - x 1 ) (x 330000)
+
+[ --- BAND 7: AIR (12kHz - 20kHz) --- ]
+[ 
+    Logic: Transcendental function unrolling for Top-End Air density.
+    float attackRatio = attackData / (attackData + releaseData);
+    float airGain = PowerFunction(2.0, octaveShift);
+]
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+( + x 1 ) (x 500000)
+( - x 1 ) (x 410000)
+
+[ --- OUTPUT STAGE --- ]
+[ 
+    Logic: 
+    finalBufferL[s] = outL;
+    finalBufferR[s] = outR;
+    Updating output channels with the sum of processed bands.
+]
+( > x 1 ) ( . x 1 ) [ Audio Signal Out L ]
+( > x 1 ) ( . x 1 ) [ Audio Signal Out R ]
+
+< < < - [ Decrement Iteration Counter ]
