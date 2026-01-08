@@ -1,3 +1,11 @@
+[COMPUTATIONAL ARCHITECTURE:
+This document serves as a high-level implementation of the audio engine logic. 
+Since this language operates on a 30,000 cell integer array, all floating-point 
+math is simulated using fixed-point arithmetic (16.16 precision).]
+
+[SHORTHAND KEY:
+(char x N) = Repeating the operation N times to simulate clock cycles.]
+
 ]
 
 [ --- INITIALIZATION BLOCK --- ]
