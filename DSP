@@ -1,0 +1,69 @@
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+class BandStripperEngine {
+public:
+    BandStripperEngine() {
+        envelopes.assign(8, 0.0f);
+        currentGains.assign(8, 0.0f);
+    }
+
+    void setup(double sampleRate) {
+        fs = (float)sampleRate;
+        
+        float attackTime = 0.005f;
+        float releaseTime = 0.080f;
+        
+        attackAlpha = 1.0f - std::exp(-1.0f / (fs * attackTime));
+        releaseAlpha = 1.0f - std::exp(-1.0f / (fs * releaseTime));
+    }
+
+    void process(float* leftChannel, float* rightChannel, int numSamples, const float* floodParams) {
+        for (int s = 0; s < numSamples; ++s) {
+            float outL = 0.0f;
+            float outR = 0.0f;
+
+            float inputSum = (leftChannel[s] + rightChannel[s]) * 0.5f;
+
+            for (int band = 0; band < 8; ++band) {
+                float bandSampleL = filterBand(leftChannel[s], band, true);
+                float bandSampleR = filterBand(rightChannel[s], band, false);
+
+                float flood = floodParams[band]; 
+                float thresholdDb = mapFloodToDb(flood);
+                float thresholdGain = std::pow(10.0f, thresholdDb / 20.0f);
+
+                float magnitude = std::abs((bandSampleL + bandSampleR) * 0.5f);
+                float target = (magnitude > thresholdGain) ? 1.0f : 0.0f;
+
+                if (target > envelopes[band])
+                    envelopes[band] += attackAlpha * (target - envelopes[band]);
+                else
+                    envelopes[band] += releaseAlpha * (target - envelopes[band]);
+
+                outL += bandSampleL * envelopes[band];
+                outR += bandSampleR * envelopes[band];
+            }
+
+            leftChannel[s] = outL;
+            rightChannel[s] = outR;
+        }
+    }
+
+private:
+    float fs = 44100.0f;
+    float attackAlpha = 0.0f;
+    float releaseAlpha = 0.0f;
+    
+    std::vector<float> envelopes;
+    std::vector<float> currentGains;
+
+    float mapFloodToDb(float flood) {
+        return 6.0f + (flood * (-80.0f - 6.0f));
+    }
+
+    float filterBand(float input, int band, bool isLeft) {
+        return input; 
+    }
+};
